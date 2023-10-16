@@ -1,0 +1,7 @@
+# FOLDER
+node_modules/
+dist/
+configs-typeOrm/
+
+# FILE
+.env
