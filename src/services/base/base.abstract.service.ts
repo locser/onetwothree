@@ -35,6 +35,14 @@ export abstract class BaseServiceAbstract<T extends BaseEntity> implements BaseS
     return await this.repository.findOneByCondition(filter);
   }
 
+  async findOneByConditionLean(filter: Partial<T>) {
+    return await this.repository.findOneByConditionLean(filter);
+  }
+
+  async findOneAndUpdate(filter: Partial<T>, update: Partial<T>, options: Partial<T>) {
+    return await this.repository.findOneAndUpdate(filter, update, options);
+  }
+
   async update(id: string, update_dto: Partial<T>) {
     return await this.repository.update(id, update_dto);
   }

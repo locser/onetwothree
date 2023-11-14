@@ -15,12 +15,23 @@ export class KeyTokenService extends BaseServiceAbstract<KeyToken> {
     super(keysRepository);
   }
 
-  async create(createDto: CreateKeyTokenDto): Promise<KeyToken> {
+  async createKeyToken(createDto: CreateKeyTokenDto) {
     try {
-      const newKeyToken = await this.keysRepository.create({
-        ...createDto,
-      });
-      return newKeyToken;
+      const filter = { user: createDto.user_id },
+        update = {
+          publicKey: createDto.publicKey,
+          privateKey: createDto.privateKey,
+          refreshToken: createDto.refreshToken,
+          refreshTokenUsed: [],
+        },
+        options = { upsert: true, new: true };
+      const tokens = await this.keysRepository.findOneAndUpdate(filter, update, options);
+
+      return tokens ? tokens.publicKey : null;
+      // const newKeyToken = await this.keysRepository.create({
+      //   ...createDto,
+      // });
+      // return newKeyToken;
     } catch (error) {
       console.log('KeyTokenService ~ create ~ error:', error);
       return null;
@@ -28,6 +39,10 @@ export class KeyTokenService extends BaseServiceAbstract<KeyToken> {
   }
   async findOneByCondition(filter: Partial<KeyToken>): Promise<KeyToken> {
     const hasKeyToken = await this.keysRepository.findOneByCondition(filter);
+    return hasKeyToken;
+  }
+  async findOneByConditionLean(filter: Partial<KeyToken>): Promise<KeyToken> {
+    const hasKeyToken = await this.keysRepository.findOneByConditionLean(filter);
     return hasKeyToken;
   }
 }

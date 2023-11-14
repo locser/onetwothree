@@ -6,9 +6,10 @@ import { ConfigModule } from './configs-mongoose/config.module';
 import { KeyTokenModule } from './module/key-token/key-token.module';
 import { UserModule } from './module/user/user.module';
 import { AuthModule } from './module/auth/auth.module';
+import { ApiKeyModule } from '@module/api-token/api-key.module';
 
 @Module({
-  imports: [ConfigModule, UserModule, KeyTokenModule, AuthModule],
+  imports: [ConfigModule, UserModule, KeyTokenModule, AuthModule, ApiKeyModule],
   controllers: [AppController],
   providers: [
     {

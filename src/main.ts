@@ -7,9 +7,6 @@ import helmet from 'helmet';
 import * as morgan from 'morgan';
 import { AppModule } from './app.module';
 
-enum VERSION {
-  V1 = 'v1',
-}
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 

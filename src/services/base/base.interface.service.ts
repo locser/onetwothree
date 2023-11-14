@@ -4,6 +4,7 @@ export interface Write<T> {
   create(item: T | any): Promise<T>;
   update(id: string, item: Partial<T>): Promise<T>;
   remove(id: string): Promise<boolean>;
+  findOneAndUpdate(filter: Partial<T>, update: Partial<T>, options: Partial<T>);
 }
 
 export interface Read<T> {

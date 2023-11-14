@@ -1,9 +1,8 @@
-import { Prop } from '@nestjs/mongoose';
-
 //EXPORT COLLECTION_NAME
 export const CONNECT_DB_NAME = 'LEARNING';
-export const USER_COLLECTION_NAME = 'users';
-export const KEY_TOKEN_COLLECTION_NAME = 'keys';
+export const USER_COLLECTION_NAME = 'users'; // cho user
+export const KEY_TOKEN_COLLECTION_NAME = 'keys'; // lưu token của user
+export const API_TOKEN_COLLECTION_NAME = 'apiKeys'; // check token có hợp lệ
 
 /* EXPORT CLASS */
 

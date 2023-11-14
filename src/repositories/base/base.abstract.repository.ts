@@ -15,13 +15,22 @@ export abstract class BaseRepositoryAbstract<T extends BaseEntity> implements Ba
     return item.deleted_at ? null : item;
   }
 
-  async findOneByCondition(condition = {}): Promise<T> {
+  async findOneByCondition(condition: FilterQuery<T>): Promise<T> {
     return await this.model
       .findOne({
         ...condition,
         deleted_at: null,
       })
       .exec();
+  }
+
+  async findOneByConditionLean(condition: FilterQuery<T>): Promise<T> {
+    return await this.model
+      .findOne({
+        ...condition,
+      })
+      .lean();
+    // .exec();
   }
 
   async findAll(condition: FilterQuery<T>, options?: QueryOptions<T>): Promise<FindAllResponse<T>> {
@@ -37,6 +46,10 @@ export abstract class BaseRepositoryAbstract<T extends BaseEntity> implements Ba
 
   async update(id: string, dto: Partial<T>): Promise<T> {
     return await this.model.findOneAndUpdate({ _id: id, deleted_at: null }, dto, { new: true });
+  }
+
+  async findOneAndUpdate(filter: object, update: object, options: object) {
+    return await this.model.findOneAndUpdate(filter, update, options);
   }
 
   async softDelete(id: string): Promise<boolean> {

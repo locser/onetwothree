@@ -18,7 +18,7 @@ export class UserService extends BaseServiceAbstract<User> {
   async create(createDto: CreateUserDto): Promise<User> {
     return await this.usersRepository.create({
       ...createDto,
-      role: USER_ROLE.MEMBER,
+      role: 'MEMBER',
     });
   }
 

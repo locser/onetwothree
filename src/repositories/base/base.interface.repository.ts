@@ -7,6 +7,8 @@ export interface BaseRepositoryInterface<T> {
 
   findOneByCondition(condition?: object, projection?: string): Promise<T>;
 
+  findOneByConditionLean(condition?: object, projection?: string): Promise<T>;
+
   findAll(condition: object, projection?: string | object, options?: object): Promise<FindAllResponse<T>>;
 
   update(id: string, dto: Partial<T>): Promise<T>;
@@ -14,4 +16,6 @@ export interface BaseRepositoryInterface<T> {
   softDelete(id: string): Promise<boolean>;
 
   permanentlyDelete(id: string): Promise<boolean>;
+
+  findOneAndUpdate(filter: object, update: object, options: object): Promise<T>;
 }
