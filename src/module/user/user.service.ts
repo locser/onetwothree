@@ -10,13 +10,13 @@ export class UserService extends BaseServiceAbstract<User> {
   constructor(
     //MODEL
     @Inject('UsersRepositoryInterface')
-    private readonly usersRepository: UsersRepositoryInterface, // @InjectModel(User.name, CONNECT_DB_NAME) private userModel: Model<User>, // @InjectModel(KeyToken.name, CONNECT_DB_NAME) private keyModel: Model<KeyToken>, //HELPER
+    private readonly usersRepository: UsersRepositoryInterface,
   ) {
     super(usersRepository);
   }
 
   async create(createDto: CreateUserDto): Promise<User> {
-    return await this.usersRepository.create({
+    return await this.usersRepository.createNew({
       ...createDto,
       role: 'MEMBER',
     });

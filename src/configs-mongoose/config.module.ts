@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule as NestJsConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigService } from './config.service';
-import { CONNECT_DB_NAME } from 'src/constants';
 import * as Joi from 'joi';
 
 @Module({
@@ -21,7 +20,6 @@ import * as Joi from 'joi';
       },
     }),
     MongooseModule.forRootAsync({
-      connectionName: CONNECT_DB_NAME,
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => await configService.createMongooseOptions(),
       inject: [ConfigService],

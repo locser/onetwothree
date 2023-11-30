@@ -5,13 +5,13 @@ import { ApiKeyRepositoryInterface } from '@module/api-token/interfaces/api-key.
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Document, FilterQuery, Model, PopulateOptions, Schema } from 'mongoose';
-import { CONNECT_DB_NAME, FindAllResponse } from 'src/constants';
 import { BaseRepositoryAbstract } from './base/base.abstract.repository';
+import { FindAllResponse } from 'src/constants';
 
 @Injectable()
 export class ApiKeyRepository extends BaseRepositoryAbstract<ApiKey> implements ApiKeyRepositoryInterface {
   constructor(
-    @InjectModel(ApiKey.name, CONNECT_DB_NAME)
+    @InjectModel(ApiKey.name)
     private readonly apiKeyModel: Model<ApiKey>,
   ) {
     super(apiKeyModel);

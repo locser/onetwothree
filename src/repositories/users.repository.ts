@@ -4,12 +4,12 @@ import { FilterQuery, Model, PopulateOptions } from 'mongoose';
 import { BaseRepositoryAbstract } from './base/base.abstract.repository';
 import { User, UserDocument } from '@module/user/entities/user.entity';
 import { UsersRepositoryInterface } from '@module/user/interfaces/users.interface';
-import { CONNECT_DB_NAME, FindAllResponse, USER_ROLE } from 'src/constants';
+import { FindAllResponse, USER_ROLE } from 'src/constants';
 
 @Injectable()
 export class UsersRepository extends BaseRepositoryAbstract<User> implements UsersRepositoryInterface {
   constructor(
-    @InjectModel(User.name, CONNECT_DB_NAME)
+    @InjectModel(User.name)
     private readonly userModel: Model<User>,
   ) {
     super(userModel);

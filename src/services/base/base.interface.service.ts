@@ -1,10 +1,11 @@
 import { FindAllResponse } from 'src/constants';
 
 export interface Write<T> {
-  create(item: T | any): Promise<T>;
+  createNew(item: T | any): Promise<T>;
   update(id: string, item: Partial<T>): Promise<T>;
   remove(id: string): Promise<boolean>;
   findOneAndUpdate(filter: Partial<T>, update: Partial<T>, options: Partial<T>);
+  removeOneByCondition(filter: Partial<T>): Promise<boolean>;
 }
 
 export interface Read<T> {

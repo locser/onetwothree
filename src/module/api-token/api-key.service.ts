@@ -15,7 +15,7 @@ export class ApiKeyService extends BaseServiceAbstract<ApiKey> {
 
   async createApiKey(createDto: CreateApiKeyDto): Promise<ApiKey> {
     try {
-      return await this.apiKeyRepository.create({
+      return await this.apiKeyRepository.createNew({
         key: createDto.key,
         status: createDto.status,
         permissions: createDto.permissions,

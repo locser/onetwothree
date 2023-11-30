@@ -6,22 +6,9 @@ import { FindAllResponse } from 'src/constants';
 export abstract class BaseServiceAbstract<T extends BaseEntity> implements BaseServiceInterface<T> {
   constructor(private readonly repository: BaseRepositoryInterface<T>) {}
 
-  async create(createDto: T | any): Promise<T> {
-    return await this.repository.create(createDto);
+  async createNew(createDto: T | any): Promise<T> {
+    return await this.repository.createNew(createDto);
   }
-
-  // async findOneById(id: string): Promise<T> {
-  //   return await this.repository.findOneById(id);
-  // }
-
-  // async findOneByCondition(condition = {}): Promise<T> {
-  //     return await this.model
-  //         .findOne({
-  //             ...condition,
-  //             deleted_at: null,
-  //         })
-  //         .exec();
-  // }
 
   async findAll(filter?: object, projection?: string | object, options?: object): Promise<FindAllResponse<T>> {
     return await this.repository.findAll(filter, projection, options);
@@ -49,5 +36,10 @@ export abstract class BaseServiceAbstract<T extends BaseEntity> implements BaseS
 
   async remove(id: string) {
     return await this.repository.softDelete(id);
+  }
+
+  async removeOneByCondition(filter: Partial<T>) {
+    // return await this.repository.(id);
+    return await this.repository.removeOneByCondition(filter);
   }
 }

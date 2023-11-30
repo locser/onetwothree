@@ -1,7 +1,7 @@
 import { FindAllResponse } from 'src/constants';
 
 export interface BaseRepositoryInterface<T> {
-  create(dto: T | any): Promise<T>;
+  createNew(dto: T | any): Promise<T>;
 
   findOneById(id: string, projection?: string, option?: object): Promise<T>;
 
@@ -18,4 +18,6 @@ export interface BaseRepositoryInterface<T> {
   permanentlyDelete(id: string): Promise<boolean>;
 
   findOneAndUpdate(filter: object, update: object, options: object): Promise<T>;
+
+  removeOneByCondition(filter: object): Promise<boolean>;
 }

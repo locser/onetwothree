@@ -16,7 +16,12 @@ const size = 8; //64
 @Injectable()
 export class AuthService {
   async logout(user_id: string) {
-    throw new Error('LogOut thành công.');
+    console.log('logout ~ user_id:', user_id);
+    await this.keyTokenService.removeOneByCondition({ user: user_id });
+
+    console.log(await this.keyTokenService.findOneByCondition({ user: user_id }));
+
+    return 'LogOut thành công.';
   }
   constructor(
     //SERVICE
@@ -32,7 +37,7 @@ export class AuthService {
 
     // mọi thứ hoàn tất, tạo token từ publicKeyObject, và privateKey phía trên:     // generate token
     const tokenPair: { accessToken: string; refreshToken: string } = await this.createTokenPair({
-      payload: { userId: hasUser._id },
+      payload: { _id: hasUser._id },
       publicKey: publicKey,
       privateKey: privateKey,
     });
@@ -101,7 +106,7 @@ export class AuthService {
           permissions: 'MEMBER',
         });
 
-        console.log(tokenPair);
+        // console.log(tokenPair);
 
         return {
           code: 201,
@@ -152,20 +157,20 @@ export class AuthService {
     }
   }
 
-  private async createKeyToken({ userId, refreshToken, publicKey, privateKey }) {
-    try {
-      const tokens = await this.keyTokenService.create({
-        user: userId,
-        refreshToken: refreshToken,
-        publicKey: publicKey,
-        privateKey: privateKey,
-      });
+  // private async createKeyToken({ userId, refreshToken, publicKey, privateKey }) {
+  //   try {
+  //     const tokens = await this.keyTokenService.create({
+  //       user: userId,
+  //       refreshToken: refreshToken,
+  //       publicKey: publicKey,
+  //       privateKey: privateKey,
+  //     });
 
-      return tokens ? tokens.refreshToken : null;
-    } catch (error) {
-      console.log('UserService ~ createKeyToken ~ error:', error);
-    }
-  }
+  //     return tokens ? tokens.refreshToken : null;
+  //   } catch (error) {
+  //     console.log('UserService ~ createKeyToken ~ error:', error);
+  //   }
+  // }
 
   // async createTokenPair(data: { payload: any; publicKey: string; privateKey: crypto.KeyObject }) {
   async createTokenPair(data: { payload: any; publicKey: string; privateKey: string }) {
@@ -173,13 +178,22 @@ export class AuthService {
       //accessToken
       const accessToken = JWT.sign(data.payload, data.privateKey, {
         // algorithm: 'RS256',
-        expiresIn: '20 days',
+        expiresIn: '50 days',
+      });
+
+      // xác thực accessToken sử dụng publicKey
+      JWT.verify(accessToken, data.privateKey, (err, decode) => {
+        if (err) {
+          console.error('error verify token');
+        } else {
+          console.log('decode jwt::', decode);
+        }
       });
 
       //create refresh token
       const refreshToken = JWT.sign(data.payload, data.privateKey, {
         // algorithm: 'RS256',
-        expiresIn: '30 days',
+        expiresIn: '50 days',
       });
 
       return { accessToken, refreshToken };

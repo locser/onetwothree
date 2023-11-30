@@ -7,9 +7,11 @@ export abstract class BaseRepositoryAbstract<T extends BaseEntity> implements Ba
   protected constructor(private readonly model: Model<T>) {
     this.model = model;
   }
-  async create(dto: T | any): Promise<T> {
+
+  async createNew(dto: T | any): Promise<T> {
     return await this.model.create(dto);
   }
+
   async findOneById(id: string): Promise<T> {
     const item = await this.model.findById(id);
     return item.deleted_at ? null : item;
@@ -67,6 +69,14 @@ export abstract class BaseRepositoryAbstract<T extends BaseEntity> implements Ba
       return false;
     }
     return !!(await this.model.findByIdAndDelete(id));
+  }
+
+  async removeOneByCondition(filter: object): Promise<boolean> {
+    const delete_item = await this.model.deleteOne(filter);
+    if (!delete_item) {
+      return false;
+    }
+    return true;
   }
 }
 
