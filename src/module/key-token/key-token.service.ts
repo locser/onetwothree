@@ -10,24 +10,39 @@ export class KeyTokenService extends BaseServiceAbstract<KeyToken> {
   constructor(
     //MODEL
     @Inject('KeysRepositoryInterface')
-    private readonly keysRepository: KeyTokensRepositoryInterface, // @InjectModel(User.name, CONNECT_DB_NAME) private userModel: Model<User>, // @InjectModel(KeyToken.name, CONNECT_DB_NAME) private keyModel: Model<KeyToken>, //HELPER
+    private readonly keysRepository: KeyTokensRepositoryInterface,
   ) {
     super(keysRepository);
   }
 
-  async create(createDto: CreateKeyTokenDto): Promise<KeyToken> {
+  async createKeyToken(createDto: CreateKeyTokenDto) {
     try {
-      const newKeyToken = await this.keysRepository.create({
-        ...createDto,
-      });
-      return newKeyToken;
+      const filter = { user: createDto.user_id },
+        update = {
+          publicKey: createDto.publicKey,
+          privateKey: createDto.privateKey,
+          refreshToken: createDto.refreshToken,
+          refreshTokenUsed: [],
+        },
+        options = { upsert: true, new: true };
+      const tokens = await this.keysRepository.findOneAndUpdate(filter, update, options);
+
+      return tokens ? tokens.publicKey : null;
     } catch (error) {
       console.log('KeyTokenService ~ create ~ error:', error);
       return null;
     }
   }
-  async findOneByCondition(filter: Partial<KeyToken>): Promise<KeyToken> {
+  async findOneByCondition(filter: object): Promise<KeyToken> {
     const hasKeyToken = await this.keysRepository.findOneByCondition(filter);
     return hasKeyToken;
+  }
+  async findOneByConditionLean(filter: object): Promise<KeyToken> {
+    const hasKeyToken = await this.keysRepository.findOneByConditionLean(filter);
+    return hasKeyToken;
+  }
+
+  async removeOneByCondition(filter: object): Promise<boolean> {
+    return await this.keysRepository.removeOneByCondition(filter);
   }
 }

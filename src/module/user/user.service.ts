@@ -10,15 +10,15 @@ export class UserService extends BaseServiceAbstract<User> {
   constructor(
     //MODEL
     @Inject('UsersRepositoryInterface')
-    private readonly usersRepository: UsersRepositoryInterface, // @InjectModel(User.name, CONNECT_DB_NAME) private userModel: Model<User>, // @InjectModel(KeyToken.name, CONNECT_DB_NAME) private keyModel: Model<KeyToken>, //HELPER
+    private readonly usersRepository: UsersRepositoryInterface,
   ) {
     super(usersRepository);
   }
 
   async create(createDto: CreateUserDto): Promise<User> {
-    return await this.usersRepository.create({
+    return await this.usersRepository.createNew({
       ...createDto,
-      role: USER_ROLE.MEMBER,
+      role: 'MEMBER',
     });
   }
 
@@ -36,6 +36,10 @@ export class UserService extends BaseServiceAbstract<User> {
     } catch (error) {
       throw error;
     }
+  }
+
+  async hasExist(user_id: string): Promise<boolean> {
+    return await this.usersRepository.hasExist({ _id: user_id });
   }
 
   // async findAll(filter?: object, projection?: string): Promise<FindAllResponse<User>> {

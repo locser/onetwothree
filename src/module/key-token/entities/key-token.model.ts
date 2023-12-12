@@ -20,18 +20,20 @@ export type KeyTokenDocument = mongoose.HydratedDocument<KeyToken>;
 export class KeyToken extends BaseEntity {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
     required: true,
+    ref: 'User',
   })
   user: User;
-  // @Prop({
-  //   type: String,
-  //   required: [true, 'privateKey is not empty'],
-  // })
-  // privateKey: string;
+
   @Prop({
     type: String,
     required: [true, 'privateKey is not empty'],
+  })
+  privateKey: string;
+
+  @Prop({
+    type: String,
+    required: [true, 'publicKey is not empty'],
   })
   publicKey: string;
 
@@ -40,5 +42,10 @@ export class KeyToken extends BaseEntity {
     // required: [true, 'refreshToken is not empty'],
   })
   refreshToken: string;
+
+  @Prop({
+    type: Array,
+  })
+  refreshTokenUsed: string[];
 }
 export const KeyTokenSchema = SchemaFactory.createForClass(KeyToken);

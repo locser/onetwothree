@@ -3,13 +3,13 @@ import { KeyTokensRepositoryInterface } from '@module/key-token/interfaces/key-t
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, PopulateOptions } from 'mongoose';
-import { CONNECT_DB_NAME, FindAllResponse } from 'src/constants';
+import { FindAllResponse } from 'src/constants';
 import { BaseRepositoryAbstract } from './base/base.abstract.repository';
 
 @Injectable()
 export class KeyTokensRepository extends BaseRepositoryAbstract<KeyToken> implements KeyTokensRepositoryInterface {
   constructor(
-    @InjectModel(KeyToken.name, CONNECT_DB_NAME)
+    @InjectModel(KeyToken.name)
     private readonly keyTokenModel: Model<KeyToken>,
   ) {
     super(keyTokenModel);

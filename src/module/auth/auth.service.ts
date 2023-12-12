@@ -7,35 +7,55 @@ import * as crypto from 'node:crypto';
 import { SALT_ROUND } from 'src/constants';
 import { SignUpDto } from './dto/sign-up.dto';
 // import * as crypto from 'crypto';
+import { ApiKeyService } from '@module/api-token/api-key.service';
 import { User } from '@module/user/entities/user.entity';
 import { getInfoData } from 'src/utils/get-info-data';
 
+const size = 8; //64
+
 @Injectable()
 export class AuthService {
+  async logout(user_id: string) {
+    console.log('logout ~ user_id:', user_id);
+    await this.keyTokenService.removeOneByCondition({ user: user_id });
+
+    console.log(await this.keyTokenService.findOneByCondition({ user: user_id }));
+
+    return 'LogOut thành công.';
+  }
   constructor(
     //SERVICE
     private readonly userService: UserService,
-    private readonly keyService: KeyTokenService, //HELPER
+    private readonly keyTokenService: KeyTokenService,
+    private readonly apiKeyService: ApiKeyService, //HELPER
   ) {}
 
-  async signIn(user_id: string) {
-    // const hasUser = await this.userService.findUserByEmail();
-    const privateKey = crypto.randomBytes(64).toString('hex');
-    const publicKey = crypto.randomBytes(64).toString('hex');
+  async signIn(email: string, password: string) {
+    const hasUser = await this.getAuthenticatedUser(email, password);
+    const privateKey = crypto.randomBytes(size).toString('hex');
+    const publicKey = crypto.randomBytes(size).toString('hex');
 
     // mọi thứ hoàn tất, tạo token từ publicKeyObject, và privateKey phía trên:     // generate token
     const tokenPair: { accessToken: string; refreshToken: string } = await this.createTokenPair({
-      payload: { userId: user_id },
+      payload: { _id: hasUser._id },
       publicKey: publicKey,
       privateKey: privateKey,
     });
 
+    await this.keyTokenService.createKeyToken({
+      user_id: hasUser._id.toString(),
+      privateKey: privateKey,
+      publicKey: publicKey,
+      refreshToken: tokenPair.refreshToken,
+    });
+
     return {
-      user_id: user_id,
+      user: getInfoData({ fields: ['_id', 'name', 'email'], object: hasUser }),
       access_token: tokenPair.accessToken,
       refresh_token: tokenPair.refreshToken,
     };
   }
+
   async signUp(signUpDto: SignUpDto) {
     try {
       //   kiểm tra email có hợp lệ hay không
@@ -70,8 +90,8 @@ export class AuthService {
         // const { privateKey, publicKey } = this.generateKeyForNewUser();
         // phức tạp chưa cần tới
 
-        const privateKey = crypto.randomBytes(64).toString('hex');
-        const publicKey = crypto.randomBytes(64).toString('hex');
+        const privateKey = crypto.randomBytes(size).toString('hex');
+        const publicKey = crypto.randomBytes(size).toString('hex');
 
         // mọi thứ hoàn tất, tạo token từ publicKeyObject, và privateKey phía trên:
         const tokenPair: { accessToken: string; refreshToken: string } = await this.createTokenPair({
@@ -80,32 +100,23 @@ export class AuthService {
           privateKey: privateKey,
         });
 
-        console.log('UserService ~ signUp ~ tokenPair:', tokenPair);
-
-        //lưu lại publicKey của User mới tạo, trả về publicKey sau khi chuyển qua string
-        const refreshToken: string = await this.createKeyToken({
-          userId: newUser._id,
-          refreshToken: tokenPair.refreshToken,
+        const key = await this.apiKeyService.createApiKey({
+          key: publicKey,
+          status: 1,
+          permissions: 'MEMBER',
         });
 
-        if (!refreshToken) {
-          throw new Error('UserService ~ signUp: #00-privateKeyString lỗi');
-        }
-
-        // do publicKey lưu trong db không lưu dưới dạng mã rsa tạo ra được, nên nó lưu dạng string,nên lấy ra thì phải tạo lại key từ đoạn string đó
-        // const privateKeyObject: crypto.KeyObject = crypto.createPrivateKey(privateKeyString);
-        // if (!privateKeyObject) {
-        //   throw new Error('UserService ~ signUp: #01-privateKeyObject lỗi');
-        // }
+        // console.log(tokenPair);
 
         return {
           code: 201,
           metadata: {
             user: getInfoData({ fields: ['_id', 'name', 'nickName'], object: newUser }),
-            tokens: {
-              accessToken: tokenPair.accessToken,
-              refreshToken: refreshToken,
-            },
+            tokens: tokenPair,
+            public_key: getInfoData({
+              fields: ['key'],
+              object: key,
+            }),
           },
         };
       }
@@ -116,8 +127,16 @@ export class AuthService {
       };
     } catch (error) {
       console.log('UserService ~ register ~ error:', error);
+      return {
+        code: 200,
+        metadata: {
+          message: error,
+        },
+      };
     }
   }
+
+  /**SUB FUNC */
 
   async getAuthenticatedUser(email: string, password: string): Promise<User> {
     try {
@@ -138,20 +157,20 @@ export class AuthService {
     }
   }
 
-  /**SUB FUNC */
+  // private async createKeyToken({ userId, refreshToken, publicKey, privateKey }) {
+  //   try {
+  //     const tokens = await this.keyTokenService.create({
+  //       user: userId,
+  //       refreshToken: refreshToken,
+  //       publicKey: publicKey,
+  //       privateKey: privateKey,
+  //     });
 
-  private async createKeyToken({ userId, refreshToken }) {
-    try {
-      const tokens = await this.keyService.create({
-        user: userId,
-        refreshToken: refreshToken,
-      });
-
-      return tokens ? tokens.refreshToken : null;
-    } catch (error) {
-      console.log('UserService ~ createKeyToken ~ error:', error);
-    }
-  }
+  //     return tokens ? tokens.refreshToken : null;
+  //   } catch (error) {
+  //     console.log('UserService ~ createKeyToken ~ error:', error);
+  //   }
+  // }
 
   // async createTokenPair(data: { payload: any; publicKey: string; privateKey: crypto.KeyObject }) {
   async createTokenPair(data: { payload: any; publicKey: string; privateKey: string }) {
@@ -159,13 +178,22 @@ export class AuthService {
       //accessToken
       const accessToken = JWT.sign(data.payload, data.privateKey, {
         // algorithm: 'RS256',
-        expiresIn: '20 days',
+        expiresIn: '50 days',
+      });
+
+      // xác thực accessToken sử dụng publicKey
+      JWT.verify(accessToken, data.privateKey, (err, decode) => {
+        if (err) {
+          console.error('error verify token');
+        } else {
+          console.log('decode jwt::', decode);
+        }
       });
 
       //create refresh token
       const refreshToken = JWT.sign(data.payload, data.privateKey, {
         // algorithm: 'RS256',
-        expiresIn: '30 days',
+        expiresIn: '50 days',
       });
 
       return { accessToken, refreshToken };
@@ -192,21 +220,7 @@ export class AuthService {
 
   // Hàm lấy publicKey
   async getPublicKey(userId: string) {
-    const token = await this.keyService.findOne(userId);
+    const token = await this.keyTokenService.findOne(userId);
     return token.publicKey;
   }
-
-  // private generateKeyForNewUser() {
-  //   return crypto.generateKeyPairSync('rsa', {
-  //     modulusLength: 4096,
-  //     publicKeyEncoding: {
-  //       type: 'pkcs1',
-  //       format: 'pem',
-  //     },
-  //     privateKeyEncoding: {
-  //       type: 'pkcs1',
-  //       format: 'pem',
-  //     },
-  //   });
-  // }
 }

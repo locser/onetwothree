@@ -1,10 +1,10 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule as NestJsConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigService } from './config.service';
-import { CONNECT_DB_NAME } from 'src/constants';
 import * as Joi from 'joi';
-
+import * as redisStore from 'cache-manager-redis-store';
+import type { RedisClientOptions } from 'redis';
 @Module({
   imports: [
     NestJsConfigModule.forRoot({
@@ -21,7 +21,6 @@ import * as Joi from 'joi';
       },
     }),
     MongooseModule.forRootAsync({
-      connectionName: CONNECT_DB_NAME,
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => await configService.createMongooseOptions(),
       inject: [ConfigService],
@@ -32,14 +31,31 @@ import * as Joi from 'joi';
     //   // @ts-ignore
     //   useFactory: async () => {
     //     return {
-    //       store: await redisStore({
+    //       store: await RedisStore.redisStore({
     //         url: `redis://:${process.env.CONFIG_REDIS_PASSWORD}@${process.env.CONFIG_REDIS_HOST}:${process.env.CONFIG_REDIS_PORT}/${process.env.CONFIG_REDIS_DB}`,
     //       }),
     //     };
     //   },
     //   isGlobal: true,
     // }),
+
+    // CacheModule.register<RedisClientOptions>({
+    //   store: redisStore,
+    //   isGlobal: true,
+
+    //   // // Store-specific configuration:
+    //   // host: 'localhost',
+    //   // port: 6379,
+    // }),
+
+    // CacheModule.register({
+    //   store: redisStore as any,
+    //   host: 'localhost', //default host
+    //   port: 6379, //default port
+    //   isGlobal: true,
+    // }),
   ],
+
   providers: [ConfigService],
   exports: [ConfigService],
 })

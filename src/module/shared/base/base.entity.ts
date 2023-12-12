@@ -1,9 +1,9 @@
 import { Prop } from '@nestjs/mongoose';
-import { Expose, Transform } from 'class-transformer';
-import { ObjectId } from 'mongoose';
+import { Transform } from 'class-transformer';
+import { Types } from 'mongoose';
 
 export class BaseEntity {
-  _id?: ObjectId | string;
+  _id?: Types.ObjectId;
 
   // @Expose()
   @Transform((value) => value.obj?._id?.toString(), {

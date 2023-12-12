@@ -1,9 +1,8 @@
 import { BaseEntity } from '@module/shared/base/base.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Exclude } from 'class-transformer';
-import { isEmail } from 'class-validator';
 import * as mongoose from 'mongoose';
-import { USER_COLLECTION_NAME, USER_ROLE, USER_STATUS } from 'src/constants';
+import { USER_COLLECTION_NAME, USER_STATUS } from 'src/constants';
 
 export type UserDocument = mongoose.HydratedDocument<User>;
 
@@ -21,8 +20,8 @@ export type UserDocument = mongoose.HydratedDocument<User>;
 export class User extends BaseEntity {
   @Prop({
     required: true,
-    minlength: 2,
-    maxlength: 30,
+    // minlength: 2,
+    // maxlength: 30,
     set: (name: string) => {
       return name.trim();
     },
@@ -32,11 +31,11 @@ export class User extends BaseEntity {
   @Prop({
     type: String,
     required: [true, 'Please enter an nick name'],
-    minlength: 2,
-    maxlength: 15,
+    // minlength: 2,
+    // maxlength: 15,
     unique: true,
     lowercase: true,
-    validate: [RegExp(/^[a-z0-9]+$/), 'Please enter a valid nickname (only letters and numbers are allowed)'],
+    // validate: [RegExp(/^[a-z0-9]+$/), 'Please enter a valid nickname (only letters and numbers are allowed)'],
   })
   nickName: string;
 
@@ -45,19 +44,19 @@ export class User extends BaseEntity {
     required: [true, 'Please enter an email'],
     unique: true,
     lowercase: true,
-    validate: [isEmail, 'Please enter a valid email'],
+    // validate: [isEmail, 'Please enter a valid email'],
   })
   email: string;
 
   @Prop({
     type: String,
     required: [true, 'Please enter a valid password'],
-    minlength: [6, 'Minimum password length must be 6 characters'],
+    // minlength: [6, 'Minimum password length must be 6 characters'],
   })
   password: string;
 
   @Prop({
-    match: /^([+]\d{2})?\d{10}$/,
+    // match: /^([+]\d{2})?\d{10}$/,
     get: (phone_number: string) => {
       if (!phone_number) {
         return;
@@ -69,10 +68,10 @@ export class User extends BaseEntity {
   phoneNumber: string;
 
   @Prop({
-    type: String,
+    // type: USER_ROLE,
     required: true,
-    enum: [USER_ROLE.MEMBER, USER_ROLE.MOD, USER_ROLE.ADMIN],
-    default: USER_ROLE.MEMBER,
+    // enum: [USER_ROLE.MEMBER, USER_ROLE.MOD, USER_ROLE.ADMIN],
+    default: 'MEMBER',
   })
   role: string;
 
@@ -84,7 +83,7 @@ export class User extends BaseEntity {
   @Prop({
     type: Number,
     required: true,
-    enum: USER_STATUS,
+    // enum: USER_STATUS,
     default: USER_STATUS.NOT_ACTIVE,
   })
   status: number;
