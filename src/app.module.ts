@@ -7,9 +7,10 @@ import { UserModule } from './module/user/user.module';
 import { AuthModule } from './module/auth/auth.module';
 import { ApiKeyModule } from '@module/api-token/api-key.module';
 import { ProductModule } from '@module/product/product.module';
+import { InventoryModule } from './module/inventory/inventory.module';
 
 @Module({
-  imports: [ConfigModule, UserModule, KeyTokenModule, AuthModule, ApiKeyModule, ProductModule],
+  imports: [ConfigModule, UserModule, KeyTokenModule, AuthModule, ApiKeyModule, ProductModule, InventoryModule],
   controllers: [AppController],
   providers: [
     {

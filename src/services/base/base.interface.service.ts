@@ -1,4 +1,4 @@
-import { FindAllResponse } from 'src/constants';
+import { FindAllResponse, FindAllResponseLean } from 'src/constants';
 
 export interface Write<T> {
   createNew(item: T | any): Promise<T>;
@@ -9,7 +9,8 @@ export interface Write<T> {
 }
 
 export interface Read<T> {
-  findAll(filter?: object, options?: object): Promise<FindAllResponse<T>>;
+  findAll(filter?: object, projection?: object | string, options?: object): Promise<FindAllResponse<T>>;
+  findAllLean(filter?: object, projection?: object | string, options?: object): Promise<FindAllResponseLean>;
   findOne(id: string): Promise<T>;
   findOneByCondition(filter: Partial<T>): Promise<T>;
 }

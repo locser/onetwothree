@@ -1,7 +1,9 @@
-import { FindAllResponse } from 'src/constants';
+import { FindAllResponse, FindAllResponseLean } from 'src/constants';
 
 export interface BaseRepositoryInterface<T> {
   createNew(dto: T | any): Promise<T>;
+
+  hasExist(filter: object): Promise<boolean>;
 
   findOneById(id: string, projection?: string, option?: object): Promise<T>;
 
@@ -10,6 +12,8 @@ export interface BaseRepositoryInterface<T> {
   findOneByConditionLean(condition?: object, projection?: string): Promise<T>;
 
   findAll(condition: object, projection?: string | object, options?: object): Promise<FindAllResponse<T>>;
+
+  findAllLean(condition: object, projection?: string | object, options?: object): Promise<FindAllResponseLean>;
 
   update(id: string, dto: Partial<T>): Promise<T>;
 

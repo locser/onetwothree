@@ -20,8 +20,8 @@ export type KeyTokenDocument = mongoose.HydratedDocument<KeyToken>;
 export class KeyToken extends BaseEntity {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'users',
     required: true,
+    ref: 'User',
   })
   user: User;
 

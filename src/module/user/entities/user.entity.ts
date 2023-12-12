@@ -20,8 +20,8 @@ export type UserDocument = mongoose.HydratedDocument<User>;
 export class User extends BaseEntity {
   @Prop({
     required: true,
-    minlength: 2,
-    maxlength: 30,
+    // minlength: 2,
+    // maxlength: 30,
     set: (name: string) => {
       return name.trim();
     },

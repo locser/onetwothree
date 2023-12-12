@@ -38,6 +38,10 @@ export class UserService extends BaseServiceAbstract<User> {
     }
   }
 
+  async hasExist(user_id: string): Promise<boolean> {
+    return await this.usersRepository.hasExist({ _id: user_id });
+  }
+
   // async findAll(filter?: object, projection?: string): Promise<FindAllResponse<User>> {
   //   return await this.usersRepository.findAllWithSubFields(filter, projection, 'role');
   // }

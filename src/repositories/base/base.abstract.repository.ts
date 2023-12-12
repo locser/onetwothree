@@ -1,6 +1,6 @@
 import { BaseEntity } from '@module/shared/base/base.entity';
 import { BaseRepositoryInterface } from './base.interface.repository';
-import { FindAllResponse } from 'src/constants';
+import { FindAllResponse, FindAllResponseLean } from 'src/constants';
 import { FilterQuery, Model, QueryOptions } from 'mongoose';
 
 export abstract class BaseRepositoryAbstract<T extends BaseEntity> implements BaseRepositoryInterface<T> {
@@ -10,6 +10,10 @@ export abstract class BaseRepositoryAbstract<T extends BaseEntity> implements Ba
 
   async createNew(dto: T | any): Promise<T> {
     return await this.model.create(dto);
+  }
+
+  async hasExist(filter: object): Promise<boolean> {
+    return !!(await this.model.exists(filter));
   }
 
   async findOneById(id: string): Promise<T> {
@@ -35,15 +39,65 @@ export abstract class BaseRepositoryAbstract<T extends BaseEntity> implements Ba
     // .exec();
   }
 
-  async findAll(condition: FilterQuery<T>, options?: QueryOptions<T>): Promise<FindAllResponse<T>> {
+  async findAll(condition: FilterQuery<T>, projection: any, options?: QueryOptions<T>): Promise<FindAllResponse<T>> {
     const [count, items] = await Promise.all([
       this.model.count({ ...condition, deleted_at: null }),
-      this.model.find({ ...condition, deleted_at: null }, options?.projection, options),
+      this.model.find({ ...condition }, projection, options),
     ]);
     return {
       count: count,
       items: items,
     };
+  }
+
+  async findAllLean(condition: FilterQuery<T>, projection: any, options?: QueryOptions<T>): Promise<FindAllResponseLean> {
+    const [count, items] = await Promise.all([
+      this.model.count({
+        ...condition,
+      }),
+      this.model
+        .find(
+          {
+            ...condition,
+          },
+          projection,
+          options,
+        )
+        .lean(),
+    ]);
+
+    return {
+      count: count,
+      items: items,
+    };
+  }
+
+  async findAllLean1(condition: FilterQuery<T>, options?: QueryOptions<T>): Promise<FindAllResponseLean> {
+    // const pipeline: any[] = [
+    //   { $match: condition },
+    //   { $project: options?.projection ? { ...options.projection } : undefined },
+    //   {
+    //     $facet: {
+    //       count: [{ $count: 'total' }],
+    //       items: [
+    //         { $skip: options?.skip || 0 },
+    //         { $limit: options?.limit || 0 },
+    //         { $sort: options?.sort },
+    //         { $project: options?.projection ? { ...options.projection } : undefined },
+    //       ],
+    //     },
+    //   },
+    // ];
+
+    // const [result] = await this.model.aggregate(pipeline).exec();
+    // const count = result.count[0]?.total || 0;
+    // const items = result.items;
+
+    // return {
+    //   count: count,
+    //   items: items,
+    // };
+    return null;
   }
 
   async update(id: string, dto: Partial<T>): Promise<T> {

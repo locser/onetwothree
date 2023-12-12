@@ -1,20 +1,19 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-// import { ProductRepository } from '@repositories/product.repository';
-import { Product, ProductSchema } from './entities/product.entity';
-// import { ProductController } from './product.controller';
-// import { ProductService } from './product.service';
 import { AuthModule } from '@module/auth/auth.module';
+import { InventoryModule } from '@module/inventory/inventory.module';
 import { KeyToken, KeyTokenSchema } from '@module/key-token/entities/key-token.model';
 import { KeyTokenService } from '@module/key-token/key-token.service';
 import { User, UserSchema } from '@module/user/entities/user.entity';
+import { UserModule } from '@module/user/user.module';
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { KeyTokensRepository } from '@repositories/key-tokens.repository';
-import { ProductController } from './product.controller';
-import { ProductService } from './product.service';
 import { ProductRepository } from '@repositories/product.repository';
 import { Clothing, ClothingProductSchema } from './entities/clothing-product.entity';
 import { Decor, DecorProductSchema } from './entities/decor-product.entity';
 import { Electronic, ElectronicProductSchema } from './entities/electronic-product.entity';
+import { Product, ProductSchema } from './entities/product.entity';
+import { ProductController } from './product.controller';
+import { ProductService } from './product.service';
 
 @Module({
   imports: [
@@ -46,6 +45,8 @@ import { Electronic, ElectronicProductSchema } from './entities/electronic-produ
       },
     ]),
     AuthModule,
+    UserModule,
+    InventoryModule,
   ],
   controllers: [ProductController],
   providers: [
@@ -54,6 +55,9 @@ import { Electronic, ElectronicProductSchema } from './entities/electronic-produ
 
     KeyTokenService,
     { provide: 'KeysRepositoryInterface', useClass: KeyTokensRepository },
+
+    // InventoryService,
+    // { provide: 'InventoryRepositoryInterface', useClass: InventoryRepository },
   ],
   // exports: [ProductService],
 })

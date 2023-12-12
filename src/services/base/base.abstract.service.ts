@@ -1,7 +1,7 @@
 import { BaseEntity } from '@module/shared/base/base.entity';
 import { BaseRepositoryInterface } from '@repositories/base/base.interface.repository';
 import { BaseServiceInterface } from './base.interface.service';
-import { FindAllResponse } from 'src/constants';
+import { FindAllResponse, FindAllResponseLean } from 'src/constants';
 
 export abstract class BaseServiceAbstract<T extends BaseEntity> implements BaseServiceInterface<T> {
   constructor(private readonly repository: BaseRepositoryInterface<T>) {}
@@ -12,6 +12,10 @@ export abstract class BaseServiceAbstract<T extends BaseEntity> implements BaseS
 
   async findAll(filter?: object, projection?: string | object, options?: object): Promise<FindAllResponse<T>> {
     return await this.repository.findAll(filter, projection, options);
+  }
+
+  async findAllLean(filter?: object, projection?: string | object, options?: object): Promise<FindAllResponseLean> {
+    return await this.repository.findAllLean(filter, projection, options);
   }
 
   async findOne(id: string): Promise<T> {
