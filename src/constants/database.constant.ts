@@ -8,6 +8,8 @@ export const PRODUCT_CLOTHING_COLLECTION_NAME = 'clothings'; // product clothing
 export const PRODUCT_ELECTRONIC_COLLECTION_NAME = 'electronic'; // product electronic
 export const PRODUCT_DECOR_COLLECTION_NAME = 'decors'; // product
 export const INVENTORY_COLLECTION_NAME = 'inventories';
+export const DISCOUNT_COLLECTION_NAME = 'discounts';
+export const CART_COLLECTION_NAME = 'carts';
 
 /* EXPORT CLASS */
 

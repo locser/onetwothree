@@ -9,7 +9,8 @@ export interface BaseRepositoryInterface<T> {
 
   findOneByCondition(condition?: object, projection?: string): Promise<T>;
 
-  findOneByConditionLean(condition?: object, projection?: string): Promise<T>;
+  // findOneByConditionLean(condition?: object, projection?: object): Promise<T>;
+  findOneByConditionLean(condition?: object): Promise<T>;
 
   findAll(condition: object, projection?: string | object, options?: object): Promise<FindAllResponse<T>>;
 

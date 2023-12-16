@@ -140,3 +140,12 @@ export abstract class BaseRepositoryAbstract<T extends BaseEntity> implements Ba
  * T extends BaseEntity: chỉ định T sẽ bao gồm các field trong BaseEntity. Nếu không extends thì IDE sẽ báo lỗi Property deleted_at does not exist on... khi chúng ta gọi item.deleted_at bên trong các method của BaseRepositoryAbstract.
  *
  */
+
+/**
+ * Trong MongoDB, projection là một cơ chế cho phép bạn chỉ lấy ra những trường dữ liệu cần thiết từ các tài liệu (documents) thay vì lấy toàn bộ dữ liệu.
+ * Việc sử dụng projection giúp giảm băng thông và tăng hiệu suất bằng cách trả về chỉ những trường cần thiết.
+ * 
+ * nếu không muốn lấy trường nào đó
+ * const projection = { __v: 0, created_at: 0 };
+
+ */
