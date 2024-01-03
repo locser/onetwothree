@@ -6,10 +6,10 @@ import * as JWT from 'jsonwebtoken';
 import * as crypto from 'node:crypto';
 import { SALT_ROUND } from 'src/constants';
 import { SignUpDto } from './dto/sign-up.dto';
-// import * as crypto from 'crypto';
 import { ApiKeyService } from '@module/api-token/api-key.service';
 import { User } from '@module/user/entities/user.entity';
 import { getInfoData } from 'src/utils/get-info-data';
+import { CartService } from '@module/cart/cart.service';
 
 const size = 8; //64
 
@@ -19,15 +19,14 @@ export class AuthService {
     console.log('logout ~ user_id:', user_id);
     await this.keyTokenService.removeOneByCondition({ user: user_id });
 
-    console.log(await this.keyTokenService.findOneByCondition({ user: user_id }));
-
     return 'LogOut thành công.';
   }
   constructor(
     //SERVICE
     private readonly userService: UserService,
     private readonly keyTokenService: KeyTokenService,
-    private readonly apiKeyService: ApiKeyService, //HELPER
+    private readonly apiKeyService: ApiKeyService,
+    private readonly cartService: CartService, //HELPER
   ) {}
 
   async signIn(email: string, password: string) {
@@ -86,6 +85,10 @@ export class AuthService {
 
       //nếu tạo user thành công thì chúng ta sẽ tạo khóa cho user đó: publicKey và privateKey
       if (newUser) {
+        //tạo luôn giỏ hàng
+
+        await this.cartService.createCartService(newUser._id);
+
         //tạo key
         // const { privateKey, publicKey } = this.generateKeyForNewUser();
         // phức tạp chưa cần tới

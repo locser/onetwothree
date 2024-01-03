@@ -1,10 +1,10 @@
-import { CacheModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule as NestJsConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigService } from './config.service';
 import * as Joi from 'joi';
-import * as redisStore from 'cache-manager-redis-store';
-import type { RedisClientOptions } from 'redis';
+// import * as redisStore from 'cache-manager-redis-store';
+// import type { RedisClientOptions } from 'redis';
 @Module({
   imports: [
     NestJsConfigModule.forRoot({

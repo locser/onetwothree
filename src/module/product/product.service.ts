@@ -20,8 +20,8 @@ import { InventoryService } from '@module/inventory/inventory.service';
 
 @Injectable()
 export class ProductService extends BaseServiceAbstract<Product> {
-  getDetailProduct(_id: Types.ObjectId, product_id: string) {
-    throw new Error('Method not implemented.');
+  getDetailProduct(user_id: Types.ObjectId, product_id: string): Promise<Product> {
+    return null;
   }
   constructor(
     @Inject('ProductsRepositoryInterface')
@@ -38,6 +38,10 @@ export class ProductService extends BaseServiceAbstract<Product> {
     private readonly inventoryService: InventoryService,
   ) {
     super(productRepository);
+  }
+
+  async hasExist(filter: object) {
+    return await this.productRepository.hasExist(filter);
   }
 
   async getAllProductPublicHomePage(listProductDto: ListProductDto) {

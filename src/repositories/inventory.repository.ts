@@ -13,4 +13,6 @@ export class InventoryRepository extends BaseRepositoryAbstract<Inventory> imple
   ) {
     super(inventoryModel);
   }
+
+  
 }
